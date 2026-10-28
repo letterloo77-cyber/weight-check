@@ -27,6 +27,10 @@ interface CalibrationPanelProps {
   setShowGrid: (val: boolean) => void;
   showTestMarks: boolean;
   setShowTestMarks: (val: boolean) => void;
+  orientation: '0' | '90' | '180' | '270';
+  setOrientation: (val: '0' | '90' | '180' | '270') => void;
+  pageSizeMode: '14x21.5' | '21.5x14';
+  setPageSizeMode: (val: '14x21.5' | '21.5x14') => void;
   onPrintTestSheet: () => void;
   onResetAll: () => void;
   selectedItemId: string | null;
@@ -46,6 +50,10 @@ export const CalibrationPanel: React.FC<CalibrationPanelProps> = ({
   setShowGrid,
   showTestMarks,
   setShowTestMarks,
+  orientation,
+  setOrientation,
+  pageSizeMode,
+  setPageSizeMode,
   onPrintTestSheet,
   onResetAll,
   selectedItemId,
@@ -187,6 +195,116 @@ export const CalibrationPanel: React.FC<CalibrationPanelProps> = ({
               <RotateCcw className="w-4 h-4" />
               <span>Reset All Offsets</span>
             </button>
+          </div>
+
+          {/* Print Orientation & Feed Direction */}
+          <div className="bg-stone-950/80 p-3.5 rounded-lg border border-amber-500/40 space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-amber-300">PRINT ORIENTATION & PAPER FEED</span>
+                <span className="text-[10px] text-stone-400">
+                  (Fixes printer platen vs sprocket feed direction)
+                </span>
+              </div>
+              <span className="text-[10px] bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded border border-amber-500/40">
+                Current: {orientation === '90' ? '90° Right (Clockwise)' : `${orientation}°`}
+              </span>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <button
+                type="button"
+                onClick={() => setOrientation('90')}
+                className={`p-2 rounded-lg border text-left transition flex flex-col gap-0.5 cursor-pointer ${
+                  orientation === '90'
+                    ? 'bg-amber-500/20 border-amber-500 text-amber-200'
+                    : 'bg-stone-900 border-stone-800 text-stone-400 hover:text-stone-200'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-xs">⟳ 90° Right</span>
+                  {orientation === '90' && <CheckCircle2 className="w-3.5 h-3.5 text-amber-400" />}
+                </div>
+                <span className="text-[9px] text-stone-400">Continuous feed fix (Recommended)</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setOrientation('0')}
+                className={`p-2 rounded-lg border text-left transition flex flex-col gap-0.5 cursor-pointer ${
+                  orientation === '0'
+                    ? 'bg-amber-500/20 border-amber-500 text-amber-200'
+                    : 'bg-stone-900 border-stone-800 text-stone-400 hover:text-stone-200'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-xs">0° Standard</span>
+                  {orientation === '0' && <CheckCircle2 className="w-3.5 h-3.5 text-amber-400" />}
+                </div>
+                <span className="text-[9px] text-stone-400">Direct landscape output</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setOrientation('180')}
+                className={`p-2 rounded-lg border text-left transition flex flex-col gap-0.5 cursor-pointer ${
+                  orientation === '180'
+                    ? 'bg-amber-500/20 border-amber-500 text-amber-200'
+                    : 'bg-stone-900 border-stone-800 text-stone-400 hover:text-stone-200'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-xs">180° Inverted</span>
+                  {orientation === '180' && <CheckCircle2 className="w-3.5 h-3.5 text-amber-400" />}
+                </div>
+                <span className="text-[9px] text-stone-400">Flipped upside-down</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setOrientation('270')}
+                className={`p-2 rounded-lg border text-left transition flex flex-col gap-0.5 cursor-pointer ${
+                  orientation === '270'
+                    ? 'bg-amber-500/20 border-amber-500 text-amber-200'
+                    : 'bg-stone-900 border-stone-800 text-stone-400 hover:text-stone-200'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-xs">⟲ 90° Left</span>
+                  {orientation === '270' && <CheckCircle2 className="w-3.5 h-3.5 text-amber-400" />}
+                </div>
+                <span className="text-[9px] text-stone-400">Counter-clockwise</span>
+              </button>
+            </div>
+
+            {/* Page Size Rule toggle */}
+            <div className="pt-2 border-t border-stone-800 flex items-center justify-between flex-wrap gap-2 text-[11px]">
+              <span className="text-stone-400">Driver @page Paper Size:</span>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setPageSizeMode('14x21.5')}
+                  className={`px-2.5 py-1 rounded text-[11px] border cursor-pointer ${
+                    pageSizeMode === '14x21.5'
+                      ? 'bg-amber-500 text-stone-950 font-bold border-amber-400'
+                      : 'bg-stone-900 text-stone-400 border-stone-800'
+                  }`}
+                >
+                  14.0 x 21.5 cm (Portrait)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPageSizeMode('21.5x14')}
+                  className={`px-2.5 py-1 rounded text-[11px] border cursor-pointer ${
+                    pageSizeMode === '21.5x14'
+                      ? 'bg-amber-500 text-stone-950 font-bold border-amber-400'
+                      : 'bg-stone-900 text-stone-400 border-stone-800'
+                  }`}
+                >
+                  21.5 x 14.0 cm (Landscape)
+                </button>
+              </div>
+            </div>
           </div>
 
           {/* Global Hardware Offsets */}

@@ -1,12 +1,11 @@
 @import "tailwindcss";
 
+/* Default print setup: strictly 0 margin to prevent Chrome headers/footers */
 @page {
-  size: 21.5cm 14cm;
-  margin: 0;
+  margin: 0mm !important;
 }
 
 @media print {
-  /* Prevent any screen zoom or parent transform from affecting print */
   * {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
@@ -15,34 +14,56 @@
   html, body {
     margin: 0 !important;
     padding: 0 !important;
-    width: 21.5cm !important;
-    height: 14cm !important;
     overflow: hidden !important;
     background: transparent !important;
   }
 
+  /* Hide all app screen UI */
   body * {
     visibility: hidden;
   }
 
-  /* Make only the bill container and its contents visible */
+  /* Make only the bill container visible */
   #bill, #bill * {
     visibility: visible;
   }
 
+  /* Base bill styling in print */
   #bill {
     position: fixed !important;
     left: 0 !important;
     top: 0 !important;
     width: 21.5cm !important;
     height: 14cm !important;
-    transform: none !important;
     border: none !important;
     box-shadow: none !important;
     background: none !important;
     margin: 0 !important;
     padding: 0 !important;
     overflow: hidden !important;
+  }
+
+  /* 90° Clockwise Rotation: Rotates bill 90° right to align with platen carriage */
+  #bill.print-rot-90 {
+    transform: translate(14cm, 0) rotate(90deg) !important;
+    transform-origin: top left !important;
+  }
+
+  /* 0° Direct / Unrotated */
+  #bill.print-rot-0 {
+    transform: none !important;
+  }
+
+  /* 180° Inverted */
+  #bill.print-rot-180 {
+    transform: translate(21.5cm, 14cm) rotate(180deg) !important;
+    transform-origin: top left !important;
+  }
+
+  /* 270° Counter-Clockwise */
+  #bill.print-rot-270 {
+    transform: translate(0, 21.5cm) rotate(270deg) !important;
+    transform-origin: top left !important;
   }
 
   /* Screen-only preview elements are never printed */

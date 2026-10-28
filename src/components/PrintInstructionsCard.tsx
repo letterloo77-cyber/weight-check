@@ -1,25 +1,20 @@
 import React from 'react';
-import { Printer, AlertCircle, Check, HelpCircle } from 'lucide-react';
+import { Printer, AlertTriangle, Check, ShieldCheck } from 'lucide-react';
 
-interface PrintInstructionsCardProps {
-  onPrintClick?: () => void;
-  canPrint?: boolean;
-}
-
-export const PrintInstructionsCard: React.FC<PrintInstructionsCardProps> = () => {
+export const PrintInstructionsCard: React.FC = () => {
   return (
-    <div className="bg-amber-950/30 border border-amber-500/40 rounded-xl p-4 text-xs font-mono text-amber-100 shadow-md">
+    <div className="bg-amber-950/30 border border-amber-500/40 rounded-xl p-4 text-xs font-mono text-amber-100 shadow-md space-y-3">
       <div className="flex items-start gap-3">
         <div className="p-2 bg-amber-500/20 text-amber-400 rounded-lg shrink-0 mt-0.5">
           <Printer className="w-5 h-5" />
         </div>
         <div className="space-y-2 flex-1">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between flex-wrap gap-2">
             <h3 className="font-bold text-amber-300 text-sm tracking-wide uppercase flex items-center gap-1.5">
               <span>EPSON LQ-310 Driver & Print Dialog Settings</span>
             </h3>
             <span className="text-[10px] bg-amber-500/20 text-amber-200 px-2 py-0.5 rounded border border-amber-500/30">
-              1-Page Strict
+              1-Page Strict • 90° Right Rotated
             </span>
           </div>
 
@@ -45,10 +40,21 @@ export const PrintInstructionsCard: React.FC<PrintInstructionsCardProps> = () =>
               <span>Scale: Exactly 100%</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <Check className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Headers / Footers: OFF</span>
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+              <span className="text-emerald-300 font-bold">Headers/Footers: OFF</span>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* High-visibility alert to remove timestamps and URL from sprocket holes */}
+      <div className="flex items-start gap-2.5 p-2.5 bg-red-950/40 border border-red-500/50 rounded-lg text-red-200 text-[11px] leading-normal">
+        <AlertTriangle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+        <div>
+          <span className="font-bold text-red-300">ELIMINATE MARGIN TEXT & TIMESTAMPS: </span>
+          <span>
+            In Chrome print dialog, expand <strong className="text-white">More settings</strong> and uncheck <strong className="text-white">&quot;Headers and footers&quot;</strong>. This prevents browser titles, dates (e.g. 10/28/26), and URLs from printing along the sprocket holes.
+          </span>
         </div>
       </div>
     </div>
