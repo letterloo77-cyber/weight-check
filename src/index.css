@@ -1,0 +1,99 @@
+@import "tailwindcss";
+
+@page {
+  size: 21.5cm 14cm;
+  margin: 0;
+}
+
+@media print {
+  /* Prevent any screen zoom or parent transform from affecting print */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 21.5cm !important;
+    height: 14cm !important;
+    overflow: hidden !important;
+    background: transparent !important;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  /* Make only the bill container and its contents visible */
+  #bill, #bill * {
+    visibility: visible;
+  }
+
+  #bill {
+    position: fixed !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 21.5cm !important;
+    height: 14cm !important;
+    transform: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+  }
+
+  /* Screen-only preview elements are never printed */
+  .screen-only {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  /* Test marks are only visible during test sheet print */
+  .test-mark {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  .test-sheet-mode .test-mark,
+  .test-sheet-mode .test-mark * {
+    display: block !important;
+    visibility: visible !important;
+  }
+}
+
+#bill {
+  position: relative;
+  width: 21.5cm;
+  height: 14cm;
+  overflow: hidden;
+  background: none;
+  color: #000;
+  box-sizing: border-box;
+}
+
+.item {
+  position: absolute;
+  white-space: pre;
+  line-height: 1;
+  font-family: "Courier New", Courier, monospace;
+}
+
+.normal {
+  font-size: 12pt;
+  letter-spacing: calc(0.254cm - 0.6em); /* exactly 10 chars per inch */
+}
+
+.title {
+  font-size: 20pt;
+  font-weight: bold;
+  letter-spacing: calc(0.5cm - 0.6em); /* double width: 0.5cm per char */
+}
+
+.net {
+  font-size: 15pt;
+  font-weight: bold;
+  letter-spacing: calc(0.5cm - 0.6em);
+}
