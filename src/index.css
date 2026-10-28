@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
-/* Default print setup: strictly 0 margin and explicit landscape page sizing */
+/* Strictly valid W3C @page rule: size: landscape forces browser print engine to landscape */
 @page {
-  size: 21.5cm 14cm landscape;
+  size: landscape;
   margin: 0mm !important;
 }
 

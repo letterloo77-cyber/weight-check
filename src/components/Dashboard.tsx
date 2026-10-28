@@ -251,13 +251,11 @@ export const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
   };
 
   const dynamicPageSize =
-    pageOrientation === 'landscape'
-      ? '21.5cm 14cm landscape'
-      : '14cm 21.5cm portrait';
+    pageOrientation === 'landscape' ? 'landscape' : 'portrait';
 
   return (
     <div className="min-h-screen bg-stone-950 text-stone-100 flex flex-col font-sans">
-      {/* Dynamic @page sizing rule to eliminate headers and set orientation */}
+      {/* Dynamic @page sizing rule to strictly force landscape orientation */}
       <style>
         {`
           @page {
@@ -653,7 +651,23 @@ export const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
               </div>
 
               {/* Print Action Button */}
-              <div className="pt-2">
+              <div className="pt-2 space-y-2">
+                <div className="flex items-center justify-between px-2 py-1 bg-amber-500/10 border border-amber-500/30 rounded-lg text-[11px] font-mono text-amber-300">
+                  <span className="flex items-center gap-1.5 font-bold">
+                    <span>▱ Layout: {pageOrientation.toUpperCase()}</span>
+                    <span className="text-[10px] text-stone-400 font-normal">
+                      ({pageOrientation === 'landscape' ? 'Horizontal - Green Bill Orientation' : 'Vertical'})
+                    </span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setPageOrientation((p) => (p === 'landscape' ? 'portrait' : 'landscape'))}
+                    className="text-[10px] underline decoration-dotted text-amber-400 hover:text-white cursor-pointer"
+                  >
+                    Change to {pageOrientation === 'landscape' ? 'Portrait' : 'Landscape'}
+                  </button>
+                </div>
+
                 <button
                   type="button"
                   onClick={handlePrintBill}
@@ -665,7 +679,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
                   }`}
                 >
                   <Printer className="w-5 h-5" />
-                  <span>PRINT WEIGHBRIDGE BILL</span>
+                  <span>PRINT WEIGHBRIDGE BILL ({pageOrientation.toUpperCase()})</span>
                 </button>
 
                 {!isFormComplete && (
