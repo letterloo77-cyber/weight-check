@@ -87,23 +87,11 @@ export const BillView: React.FC<BillViewProps> = ({
   return (
     <div
       id="bill"
-      className={`relative select-none print-rot-${orientation} ${
-        showTestMarks ? 'test-sheet-mode' : ''
-      }`}
+      className={`relative select-none ${showTestMarks ? 'test-sheet-mode' : ''}`}
       style={{
         width: '21.5cm',
         height: '14cm',
         backgroundColor: 'transparent',
-        transform: previewRotated
-          ? orientation === '90'
-            ? 'translate(14cm, 0) rotate(90deg)'
-            : orientation === '180'
-            ? 'translate(21.5cm, 14cm) rotate(180deg)'
-            : orientation === '270'
-            ? 'translate(0, 21.5cm) rotate(270deg)'
-            : 'none'
-          : undefined,
-        transformOrigin: previewRotated ? 'top left' : undefined,
       }}
     >
       {/* 1cm Screen-only calibration grid */}

@@ -39,8 +39,7 @@ const LOCAL_STORAGE_KEYS = {
   GLOBAL_Y: 'epson_lq310_calibration_global_y',
   ORIGIN_X_OFFSET: 'epson_lq310_origin_x_offset_cm',
   ITEM_OFFSETS: 'epson_lq310_item_offsets',
-  ORIENTATION: 'epson_lq310_orientation',
-  PAGE_SIZE_MODE: 'epson_lq310_page_size_mode',
+  PAGE_ORIENTATION: 'epson_lq310_page_orientation',
 };
 
 export const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
@@ -84,36 +83,22 @@ export const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
     }
   });
 
-  // Print Orientation: default '90' (90° clockwise/right) as requested
-  const [orientation, setOrientation] = useState<'0' | '90' | '180' | '270'>(() => {
+  // Page Orientation: 'landscape' (Horizontal) by default, or 'portrait' (Vertical)
+  const [pageOrientation, setPageOrientation] = useState<'landscape' | 'portrait'>(() => {
     try {
-      const saved = localStorage.getItem(LOCAL_STORAGE_KEYS.ORIENTATION);
-      if (saved === '0' || saved === '90' || saved === '180' || saved === '270') {
+      const saved = localStorage.getItem(LOCAL_STORAGE_KEYS.PAGE_ORIENTATION);
+      if (saved === 'landscape' || saved === 'portrait') {
         return saved;
       }
-      return '90';
+      return 'landscape';
     } catch {
-      return '90';
-    }
-  });
-
-  // Paper Size mode for @page rule in print
-  const [pageSizeMode, setPageSizeMode] = useState<'14x21.5' | '21.5x14'>(() => {
-    try {
-      const saved = localStorage.getItem(LOCAL_STORAGE_KEYS.PAGE_SIZE_MODE);
-      if (saved === '14x21.5' || saved === '21.5x14') {
-        return saved;
-      }
-      return '14x21.5';
-    } catch {
-      return '14x21.5';
+      return 'landscape';
     }
   });
 
   // UI Preview States
   const [showGrid, setShowGrid] = useState<boolean>(true);
   const [showTestMarks, setShowTestMarks] = useState<boolean>(false);
-  const [previewRotated, setPreviewRotated] = useState<boolean>(false);
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [previewZoom, setPreviewZoom] = useState<number>(0.9);
   const [activeTab, setActiveTab] = useState<'form' | 'calibration'>('form');
@@ -153,19 +138,11 @@ export const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
 
   useEffect(() => {
     try {
-      localStorage.setItem(LOCAL_STORAGE_KEYS.ORIENTATION, orientation);
+      localStorage.setItem(LOCAL_STORAGE_KEYS.PAGE_ORIENTATION, pageOrientation);
     } catch {
       // ignore
     }
-  }, [orientation]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(LOCAL_STORAGE_KEYS.PAGE_SIZE_MODE, pageSizeMode);
-    } catch {
-      // ignore
-    }
-  }, [pageSizeMode]);
+  }, [pageOrientation]);
 
   // Strip page title during printing to prevent browser headers
   useEffect(() => {
@@ -256,14 +233,12 @@ export const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
       setGlobalOffsetY(0);
       setOriginXOffsetCm(ORIGIN_X_OFFSET_CM);
       setItemOffsets({});
-      setOrientation('90');
-      setPageSizeMode('14x21.5');
+      setPageOrientation('landscape');
       localStorage.removeItem(LOCAL_STORAGE_KEYS.GLOBAL_X);
       localStorage.removeItem(LOCAL_STORAGE_KEYS.GLOBAL_Y);
       localStorage.removeItem(LOCAL_STORAGE_KEYS.ORIGIN_X_OFFSET);
       localStorage.removeItem(LOCAL_STORAGE_KEYS.ITEM_OFFSETS);
-      localStorage.removeItem(LOCAL_STORAGE_KEYS.ORIENTATION);
-      localStorage.removeItem(LOCAL_STORAGE_KEYS.PAGE_SIZE_MODE);
+      localStorage.removeItem(LOCAL_STORAGE_KEYS.PAGE_ORIENTATION);
     }
   };
 
@@ -275,7 +250,10 @@ export const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
     setFormData(INITIAL_FORM_DATA);
   };
 
-  const dynamicPageSize = pageSizeMode === '14x21.5' ? '14cm 21.5cm' : '21.5cm 14cm';
+  const dynamicPageSize =
+    pageOrientation === 'landscape'
+      ? '21.5cm 14cm landscape'
+      : '14cm 21.5cm portrait';
 
   return (
     <div className="min-h-screen bg-stone-950 text-stone-100 flex flex-col font-sans">
@@ -311,32 +289,32 @@ export const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
 
         {/* Header Actions */}
         <div className="flex items-center gap-2 flex-wrap">
-          {/* Quick Print Orientation Switcher */}
+          {/* Quick Print Layout Switcher */}
           <div className="flex items-center gap-1 bg-stone-850 p-1 rounded-lg border border-stone-700">
-            <span className="text-[10px] text-stone-400 px-1 font-mono">Print:</span>
+            <span className="text-[10px] text-stone-400 px-1 font-mono">Layout:</span>
             <button
               type="button"
-              onClick={() => setOrientation('90')}
-              className={`px-2 py-0.5 rounded text-[11px] font-mono cursor-pointer transition ${
-                orientation === '90'
+              onClick={() => setPageOrientation('landscape')}
+              className={`px-2.5 py-1 rounded text-[11px] font-mono cursor-pointer transition flex items-center gap-1 ${
+                pageOrientation === 'landscape'
                   ? 'bg-amber-500 text-stone-950 font-bold shadow-sm'
                   : 'text-stone-400 hover:text-stone-200 hover:bg-stone-800'
               }`}
-              title="90° Right (Clockwise) - Aligns with EPSON LQ-310 continuous feed carriage"
+              title="Landscape: Horizontal across platen between sprocket holes (Recommended)"
             >
-              ⟳ 90° Right
+              <span>▱ Landscape (Horizontal)</span>
             </button>
             <button
               type="button"
-              onClick={() => setOrientation('0')}
-              className={`px-2 py-0.5 rounded text-[11px] font-mono cursor-pointer transition ${
-                orientation === '0'
+              onClick={() => setPageOrientation('portrait')}
+              className={`px-2.5 py-1 rounded text-[11px] font-mono cursor-pointer transition flex items-center gap-1 ${
+                pageOrientation === 'portrait'
                   ? 'bg-amber-500 text-stone-950 font-bold shadow-sm'
                   : 'text-stone-400 hover:text-stone-200 hover:bg-stone-800'
               }`}
-              title="0° Standard - Direct landscape"
+              title="Portrait: Vertical along feed direction"
             >
-              0° Normal
+              <span>▯ Portrait (Vertical)</span>
             </button>
           </div>
 
@@ -376,7 +354,12 @@ export const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
         {/* Left Column: Form & Calibration (5 cols) */}
         <div className="screen-only xl:col-span-5 space-y-5">
           {/* Print Instructions Banner */}
-          <PrintInstructionsCard />
+          <PrintInstructionsCard
+            pageOrientation={pageOrientation}
+            onToggleOrientation={() =>
+              setPageOrientation((p) => (p === 'landscape' ? 'portrait' : 'landscape'))
+            }
+          />
 
           {/* Tab Switcher: Form vs Calibration */}
           <div className="flex bg-stone-900 p-1 rounded-xl border border-stone-800">
@@ -709,10 +692,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
               setShowGrid={setShowGrid}
               showTestMarks={showTestMarks}
               setShowTestMarks={setShowTestMarks}
-              orientation={orientation}
-              setOrientation={setOrientation}
-              pageSizeMode={pageSizeMode}
-              setPageSizeMode={setPageSizeMode}
+              pageOrientation={pageOrientation}
+              setPageOrientation={setPageOrientation}
               onPrintTestSheet={handlePrintTestSheet}
               onResetAll={handleResetAllCalibration}
               selectedItemId={selectedItemId}
@@ -728,7 +709,9 @@ export const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
             <div className="flex items-center gap-2 font-mono text-xs text-stone-300">
               <span className="font-bold text-amber-400">LIVE PREVIEW</span>
               <span className="text-stone-600">|</span>
-              <span className="text-[11px] text-stone-400">21.5 cm x 14.0 cm</span>
+              <span className="text-[11px] text-stone-400">
+                {pageOrientation === 'landscape' ? '21.5 cm x 14.0 cm (Landscape)' : '14.0 cm x 21.5 cm (Portrait)'}
+              </span>
               <span className="text-stone-600">|</span>
               <span className="text-[11px] text-stone-400">
                 Offsets: X:{globalOffsetX >= 0 ? `+${globalOffsetX}` : globalOffsetX}mm, Y:
@@ -736,23 +719,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
               </span>
             </div>
 
-            {/* Zoom & View Controls */}
+            {/* Zoom / Scale Controls */}
             <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => setPreviewRotated(!previewRotated)}
-                className={`px-2.5 py-1 rounded text-xs font-mono border flex items-center gap-1.5 cursor-pointer transition ${
-                  previewRotated
-                    ? 'bg-amber-500 text-stone-950 font-bold border-amber-400'
-                    : 'bg-stone-800 text-stone-300 border-stone-700 hover:bg-stone-700'
-                }`}
-                title="Toggle between upright reading view and the 90° rotated print output"
-              >
-                <span>{previewRotated ? '⟳ Rotated 90° View' : 'Upright View'}</span>
-              </button>
-
-              <div className="h-4 w-px bg-stone-750" />
-
               <button
                 type="button"
                 onClick={() => setPreviewZoom((z) => Math.max(0.5, Math.round((z - 0.1) * 10) / 10))}
@@ -803,10 +771,10 @@ export const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
             >
               {/* Paper representation: continuous form with side sprocket perforations visually for operator convenience */}
               <div
-                className="relative bg-white text-black shadow-2xl rounded-sm border border-stone-300 select-none transition-all duration-150"
+                className="relative bg-white text-black shadow-2xl rounded-sm border border-stone-300 select-none"
                 style={{
-                  width: previewRotated ? '14cm' : '21.5cm',
-                  height: previewRotated ? '21.5cm' : '14cm',
+                  width: pageOrientation === 'landscape' ? '21.5cm' : '14cm',
+                  height: pageOrientation === 'landscape' ? '14cm' : '21.5cm',
                   boxShadow: '0 20px 45px rgba(0,0,0,0.6)',
                 }}
               >
@@ -830,10 +798,10 @@ export const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
 
                 {/* Perforation guide lines */}
                 <div className="screen-only absolute -top-3 left-0 right-0 h-3 flex items-center justify-center text-[9px] font-mono text-stone-500">
-                  --- Top Perforation Line ({previewRotated ? '14.0 cm' : '21.5 cm'}) ---
+                  --- Top Perforation Line ({pageOrientation === 'landscape' ? '21.5 cm' : '14.0 cm'}) ---
                 </div>
                 <div className="screen-only absolute -bottom-3 left-0 right-0 h-3 flex items-center justify-center text-[9px] font-mono text-stone-500">
-                  --- Bottom Perforation Line ({previewRotated ? '14.0 cm' : '21.5 cm'}) ---
+                  --- Bottom Perforation Line ({pageOrientation === 'landscape' ? '21.5 cm' : '14.0 cm'}) ---
                 </div>
 
                 {/* The actual #bill DOM element that gets printed */}
@@ -845,8 +813,6 @@ export const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
                   itemOffsets={itemOffsets}
                   showGrid={showGrid}
                   showTestMarks={showTestMarks}
-                  orientation={orientation}
-                  previewRotated={previewRotated}
                   selectedItemId={selectedItemId}
                   onSelectItem={(id) => {
                     setSelectedItemId(id);

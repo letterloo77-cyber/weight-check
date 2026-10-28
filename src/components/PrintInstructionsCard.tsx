@@ -1,7 +1,15 @@
 import React from 'react';
-import { Printer, AlertTriangle, Check, ShieldCheck } from 'lucide-react';
+import { Printer, AlertTriangle, Check, ShieldCheck, RefreshCw } from 'lucide-react';
 
-export const PrintInstructionsCard: React.FC = () => {
+interface PrintInstructionsCardProps {
+  pageOrientation?: 'landscape' | 'portrait';
+  onToggleOrientation?: () => void;
+}
+
+export const PrintInstructionsCard: React.FC<PrintInstructionsCardProps> = ({
+  pageOrientation = 'landscape',
+  onToggleOrientation,
+}) => {
   return (
     <div className="bg-amber-950/30 border border-amber-500/40 rounded-xl p-4 text-xs font-mono text-amber-100 shadow-md space-y-3">
       <div className="flex items-start gap-3">
@@ -11,11 +19,23 @@ export const PrintInstructionsCard: React.FC = () => {
         <div className="space-y-2 flex-1">
           <div className="flex items-center justify-between flex-wrap gap-2">
             <h3 className="font-bold text-amber-300 text-sm tracking-wide uppercase flex items-center gap-1.5">
-              <span>EPSON LQ-310 Driver & Print Dialog Settings</span>
+              <span>EPSON LQ-310 Print Dialog Settings</span>
             </h3>
-            <span className="text-[10px] bg-amber-500/20 text-amber-200 px-2 py-0.5 rounded border border-amber-500/30">
-              1-Page Strict • 90° Right Rotated
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] bg-amber-500/20 text-amber-200 px-2 py-0.5 rounded border border-amber-500/30 font-bold uppercase">
+                Active: {pageOrientation.toUpperCase()}
+              </span>
+              {onToggleOrientation && (
+                <button
+                  type="button"
+                  onClick={onToggleOrientation}
+                  className="text-[10px] px-2 py-0.5 bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold rounded cursor-pointer transition flex items-center gap-1"
+                >
+                  <RefreshCw className="w-3 h-3" />
+                  <span>Switch to {pageOrientation === 'landscape' ? 'Portrait' : 'Landscape'}</span>
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Exact required note */}
@@ -33,7 +53,7 @@ export const PrintInstructionsCard: React.FC = () => {
             </div>
             <div className="flex items-center gap-1.5">
               <Check className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Margins: None (0 mm)</span>
+              <span>Layout: <strong className="text-amber-300 uppercase">{pageOrientation}</strong></span>
             </div>
             <div className="flex items-center gap-1.5">
               <Check className="w-3.5 h-3.5 text-emerald-400" />
@@ -47,14 +67,22 @@ export const PrintInstructionsCard: React.FC = () => {
         </div>
       </div>
 
-      {/* High-visibility alert to remove timestamps and URL from sprocket holes */}
-      <div className="flex items-start gap-2.5 p-2.5 bg-red-950/40 border border-red-500/50 rounded-lg text-red-200 text-[11px] leading-normal">
-        <AlertTriangle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
-        <div>
-          <span className="font-bold text-red-300">ELIMINATE MARGIN TEXT & TIMESTAMPS: </span>
-          <span>
-            In Chrome print dialog, expand <strong className="text-white">More settings</strong> and uncheck <strong className="text-white">&quot;Headers and footers&quot;</strong>. This prevents browser titles, dates (e.g. 10/28/26), and URLs from printing along the sprocket holes.
-          </span>
+      {/* Orientation & Headers Notice */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+        <div className="flex items-start gap-2 p-2 bg-stone-900/80 border border-amber-500/30 rounded-lg text-[10.5px] text-amber-200">
+          <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+          <div>
+            <strong className="text-white block">ORIENTATION SWITCH:</strong>
+            If your printout comes out vertically along the sprocket holes, ensure <strong className="text-amber-300">Landscape</strong> is selected in Chrome&apos;s print dialog under &quot;Layout&quot;.
+          </div>
+        </div>
+
+        <div className="flex items-start gap-2 p-2 bg-stone-900/80 border border-stone-700 rounded-lg text-[10.5px] text-stone-300">
+          <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+          <div>
+            <strong className="text-white block">CLEAN SPROCKET MARGINS:</strong>
+            In Chrome print dialog &rarr; <em>More settings</em> &rarr; uncheck <em>&quot;Headers and footers&quot;</em> so no date or title prints on the pin strips.
+          </div>
         </div>
       </div>
     </div>
